@@ -18,8 +18,10 @@ import do_mpc
 import casadi as cs
 import imageio
 
-
-
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.simplefilter(action='ignore', category=UserWarning)
+warnings.simplefilter(action='ignore', category=Warning)
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -196,6 +198,7 @@ def main():
     # initialize the environment
     scene = core.Empty(args.num_agents, max_steps=args.max_steps) if args.env == 'Empty' else core.Maze(args.num_agents, max_steps=args.max_steps)
     if args.ref is not None:
+        print("args.ref is not NONE!")
         scene.read(args.ref)
 
     if not os.path.exists('trajectory'):
@@ -276,7 +279,7 @@ def main():
                 deadlock_info_window = np.all(deadlock_window, axis=0).astype(np.float32)
         
                 deadlock_info = np.sum(deadlock_info_window)
-                #print("deadlock_info", deadlock_info)
+                # print("deadlock_info", deadlock_info)
              
                 deadlock_ratio = deadlock_info / args.num_agents  
               
@@ -445,7 +448,7 @@ def main():
         print(iscollision)
 
         collision_resolved_count = 0
-        mpc_cbf_trigger_count = 0  # Counter for MPC-CBF triggers
+        mpc_icbf_trigger_count = 0  # Counter for MPC-CBF triggers
         previous_iscollision = iscollision.copy()
         collision_pairs = set((i, j) for i in range(iscollision.shape[0]) for j in range(i + 1, iscollision.shape[1]) if iscollision[i, j] == 1)
 
@@ -583,7 +586,7 @@ def main():
 
             # Save the gif
             gif_path = os.path.join('trajectory', 'ours_trajectory_32_agents_empty_itr_099_fps_10_trailing_random.gif')
-            imageio.mimsave(gif_path, gif_frames, fps=10)
+            imageio.mimsave(gif_path, gif_frames, duration=100)
             print(f"GIF saved at: {gif_path}")
 
         
